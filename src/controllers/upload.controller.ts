@@ -33,7 +33,10 @@ export const uploadFile = (req: Request, res: Response) => {
 };
 
 export const getIp = async (req: Request, res: Response) => {
-  let random = Math.floor(Math.random() * (await FileMetadata.count().exec()));
+  let count = await FileMetadata.count().exec();
+  if (count == 0)
+    return res.status(400).send({ status: false, message: "no hay direcciones ip" });
+  let random = Math.floor(Math.random() * count);
   let ip = await FileMetadata.findOne().skip(random).exec();
   ip!.countGetIp = ip!.countGetIp + 1;
   await ip!.save();
